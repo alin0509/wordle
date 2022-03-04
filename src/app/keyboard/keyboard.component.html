@@ -1,0 +1,10 @@
+<div class="app-keyboard-row"
+     *ngFor="let row of keys$ | async">
+  <ng-container *ngFor="let key of row">
+    <button class="app-keyboard-key {{key.state}}"
+            (click)="clickedKey(key)">
+      {{key.value}}
+    </button>
+  </ng-container>
+
+</div>

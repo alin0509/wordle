@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Coiny&display=swap');
+.app-keyboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    &-row {
+        display: flex;
+        flex-direction: row;
+    }
+    &-key {
+        min-width: 30px;
+        margin: 2px;
+        padding: 5px;
+        color: #ffffff;
+        background-color: lightgray;
+        font-family: 'Coiny', cursive;
+        text-transform: uppercase;
+        border: solid 1px darkgrey;
+        border-radius: 4px;
+
+        &.default {
+            color: #000000;
+        }
+        &.not-present {
+            background-color: #8b8878;
+        }
+        &.present {
+            background-color: #CDBE70;
+        }
+        &.correct {
+            background-color: #a2cd5a;
+        }
+    }
+}

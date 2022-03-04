@@ -1,0 +1,8 @@
+<div class="app-game-table-row"
+     *ngFor="let row of words$|async">
+  <ng-container *ngFor="let key of row">
+    <div class="app-game-table-key {{key.state}}">
+      <span>{{key.value}}</span>
+    </div>
+  </ng-container>
+</div>
