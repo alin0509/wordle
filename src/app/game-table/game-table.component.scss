@@ -29,19 +29,20 @@
         }
         &.not-present {
             background-color: #8b8878;
-            border: none;
+            border: solid 2px #8b8878;
         }
         &.present {
             background-color: #cdbe70;
-            border: none;
+            border: solid 2px #cdbe70;
         }
         &.correct {
             background-color: #a2cd5a;
-            border: none;
+            border: solid 2px #a2cd5a;
         }
-        &.filled{
+        &.filled {
             color: #000000;
-            border-color: rgb(54, 54, 54); 
+            border-color: rgb(54, 54, 54);
+            border: solid 2px rgb(54, 54, 54);
         }
     }
 }

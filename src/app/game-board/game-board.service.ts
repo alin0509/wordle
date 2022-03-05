@@ -1,14 +1,46 @@
 import { Injectable } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { words } from '../game-table/game-table.data';
 import { keys } from '../keyboard/keyboard.data';
 import { KeyboardKey, KeyState } from '../keyboard/keyboard.interface';
+import { WORDS } from './words.data';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameBoardService {
+  private wordToFind: string = 'qwerty';
+  currentRowIndex: number = 0;
+
   private currentWordValue$ = new BehaviorSubject<KeyboardKey[]>([]);
+  private keyBoardCurrentValue$ = new BehaviorSubject<any>(keys);
+  private wordsCurrentValue$ = new BehaviorSubject<any>(words);
+
+  constructor(private cookieService: CookieService) {
+
+    this.currentRowIndex = 0;
+    this.wordToFind = this.cookieService.get('word');
+    if (this.wordToFind === '') {
+      this.generateNewWord();
+    };
+
+    const wordsCookie: string = this.cookieService.get('words');
+    if (wordsCookie === '') {
+      this.wordsCurrentValue$.next(words);
+    } else {
+      const wordsCookieArr: any[] = JSON.parse(wordsCookie)
+      wordsCookieArr.forEach((w, index) => {
+        if (w[0].value !== '') {
+          this.currentRowIndex = index;
+        }
+      });
+      this.currentRowIndex = this.currentRowIndex + 1;
+      this.wordsCurrentValue$.next(wordsCookieArr);
+    }
+    const keysCookie = this.cookieService.get('keys');
+    this.keyBoardCurrentValue$.next(keysCookie !== '' ? JSON.parse(keysCookie) : keys);
+  }
 
   updateCurrentWord(value: KeyboardKey[]) {
     this.currentWordValue$.next(value);
@@ -17,12 +49,14 @@ export class GameBoardService {
   currentWord$(): Observable<KeyboardKey[]> {
     return this.currentWordValue$.asObservable();
   }
-  currentWorld(): KeyboardKey[] {
+  currentWord(): KeyboardKey[] {
     return this.currentWordValue$.value;
+  }
+  resetCurrentWord() {
+    this.currentWordValue$.next([]);
   }
 
 
-  private keyBoardCurrentValue$ = new BehaviorSubject<any>(keys);
   updateKeyBoardCurrent(value: any[]) {
     this.keyBoardCurrentValue$.next(value);
   }
@@ -37,7 +71,9 @@ export class GameBoardService {
       .map((row: KeyboardKey[]) => {
         return row.map(k => {
           if (k.value === key.value) {
-            k.state = state;
+            if (k.state !== KeyState.Correct) {
+              k.state = state;
+            }
           }
           return k;
         })
@@ -46,40 +82,68 @@ export class GameBoardService {
   }
 
 
-  currentRowIndex: number = 0;
-  private wordsCurrentValue$ = new BehaviorSubject<any>(words);
-  
   updateWordsCurrent() {
     const words = this.wordsBoardCurrent();
-    const currentWorld = this.currentWorld();
+    const currentWorld = this.currentWord();
     const word: KeyboardKey[] = words[this.currentRowIndex];
     words[this.currentRowIndex] = word.map((k, index) => {
       if (currentWorld[index]) {
-        k ={ value: currentWorld[index].value, state: KeyState.Filled };  
+        k = { value: currentWorld[index].value, state: KeyState.Filled };
       } else {
         k = { value: '', state: KeyState.Default };
       }
       return k;
     });
-
     this.wordsCurrentValue$.next(words);
   }
   wordsBoardCurrent$(): Observable<any[]> {
     return this.wordsCurrentValue$.asObservable();
   }
-  wordsBoardCurrent(): any[] {
+  wordsBoardCurrent(): KeyboardKey[][] {
     return this.wordsCurrentValue$.value;
   }
-  // updateWordsBoardState(key: string, state: KeyState) {
-  //   const words = this.wordsBoardCurrent()
-  //     .map((row: KeyboardKey[]) => {
-  //       return row.map(k => {
-  //         if (k.value === key) {
-  //           k.state = state;
-  //         }
-  //         return k;
-  //       })
-  //     });
-  //   // this.updateWordsCurrent(words)
-  // }
+  testTheWord() {
+    const words = this.wordsBoardCurrent();
+    const word: KeyboardKey[] = words[this.currentRowIndex];
+    words[this.currentRowIndex] = word.map((k, index) => {
+      const foundIndex: number = this.wordToFind.indexOf(k?.value ?? '');
+      if (foundIndex === index) {
+        k.state = KeyState.Correct;
+      } else if (foundIndex !== -1) {
+        k.state = KeyState.Present;
+      } else {
+        k.state = KeyState.NotPresent;
+      }
+      return k;
+    });
+    words[this.currentRowIndex].forEach(k => this.updateKeyBoardState(k, k?.state ?? KeyState.Default));
+
+    this.updateCookiesValues();
+    if (!words[this.currentRowIndex].some(k => (k.state === KeyState.NotPresent || k.state === KeyState.Present))) {
+      setTimeout(() => alert('You win!'), 0);
+      return;
+    } else {
+      this.currentRowIndex = this.currentRowIndex + 1;
+      this.resetCurrentWord();
+    }
+    if (this.currentRowIndex > 5) {
+      setTimeout(() => alert('Game Over'), 0);
+    }
+  }
+
+  updateCookiesValues() {
+    this.cookieService.set('words', JSON.stringify(this.wordsBoardCurrent()));
+    this.cookieService.set('keys', JSON.stringify(this.keyBoardCurrent()));
+  }
+  generateNewWord() {
+    this.wordToFind = this.generateRandomWord();
+    this.cookieService.set('word', this.wordToFind);
+  }
+  generateRandomWord() {
+    return WORDS[Math.floor(Math.random() * (words.length - 1))];
+  }
+
+  verifyWord(word: string) {
+    return WORDS.find(w => w === word);
+  }
 }

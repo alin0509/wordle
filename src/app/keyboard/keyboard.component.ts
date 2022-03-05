@@ -26,22 +26,25 @@ export class KeyboardComponent implements OnInit {
         this.gameBoardService.updateCurrentWord(this.currentWord);
         this.gameBoardService.updateKeyBoardState(el ?? {} as KeyboardKey, KeyState.Default);
       }
-      console.log(this.currentWord.join(''));
       return;
     }
 
     if (this.currentWord.length === 5) {
       if (key.value === 'enter') {
         console.log('test the world');
+        if (this.gameBoardService.verifyWord(this.currentWord.map(k => k.value).join(''))) {
+          this.gameBoardService.testTheWord();
+          this.currentWord = [];
+        } else {
+          alert('Not a valid word!');
+        }
       }
-      return
+      return;
     }
     if (key.value === 'enter') {
-      return
+      return;
     }
     this.currentWord.push(key);
     this.gameBoardService.updateCurrentWord(this.currentWord);
-    // this.gameBoardService.updateKeyBoardState(key, KeyState.NotPresent);
-    console.log(this.currentWord.map(k => k.value).join(''));
   }
 }

@@ -8,13 +8,14 @@
         flex-direction: row;
     }
     &-key {
-        min-width: 30px;
-        margin: 2px;
+        min-width: 35px;
+        margin: 3px;
         padding: 5px;
         color: #ffffff;
         background-color: lightgray;
-        font-family: 'Coiny', cursive;
+        font-family: "Coiny", cursive;
         text-transform: uppercase;
+        font-size: 18px;
         border: solid 1px darkgrey;
         border-radius: 4px;
 
@@ -23,12 +24,15 @@
         }
         &.not-present {
             background-color: #8b8878;
+            border: solid 1px #8b8878;
         }
         &.present {
             background-color: #CDBE70;
+            border: solid 1px #CDBE70;
         }
         &.correct {
             background-color: #a2cd5a;
+            border: solid 1px #a2cd5a;
         }
     }
 }
