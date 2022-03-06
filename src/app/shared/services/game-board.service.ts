@@ -12,6 +12,7 @@ import { Letter, LetterState } from '../interfaces';
 export class GameBoardService {
   private wordToFind: string = '';
   private currentRowIndex: number = 0;
+  private currentDay: string = new Date().toISOString().slice(0, 10);
 
   private currentWordValue$ = new BehaviorSubject<Letter[]>([]);
   private keyboardCurrentStateValue$ = new BehaviorSubject<any>(KeyboardDefaultValues);
@@ -126,12 +127,12 @@ export class GameBoardService {
   }
 
   private updateCookiesValues() {
-    this.cookieService.set('words', JSON.stringify(this.wordsArrayCurrentValues()));
-    this.cookieService.set('keys', JSON.stringify(this.keyboardCurrentState()));
+    this.cookieService.set('words_'+this.currentDay, JSON.stringify(this.wordsArrayCurrentValues()));
+    this.cookieService.set('keys_'+this.currentDay, JSON.stringify(this.keyboardCurrentState()));
   }
 
   private generateWordToFind() {
-    this.wordToFind = this.cookieService.get('word');
+    this.wordToFind = this.cookieService.get('word_'+this.currentDay);
     if (this.wordToFind === '') {
       this.generateNewWord();
     };
@@ -139,11 +140,11 @@ export class GameBoardService {
 
   private generateNewWord() {
     this.wordToFind = GameHelper.generateRandomWord();
-    this.cookieService.set('word', this.wordToFind);
+    this.cookieService.set('word_'+this.currentDay, this.wordToFind);
   }
 
   private initWordArrayValues() {
-    const wordsCookie: string = this.cookieService.get('words');
+    const wordsCookie: string = this.cookieService.get('words_'+this.currentDay);
     if (wordsCookie === '') {
       this.wordsArrayCurrentValue$.next(GameDefaultValues);
     } else {
@@ -152,7 +153,7 @@ export class GameBoardService {
   }
 
   private initKeyboardValues() {
-    const keysCookie = this.cookieService.get('keys');
+    const keysCookie = this.cookieService.get('keys_'+this.currentDay);
     this.keyboardCurrentStateValue$.next(keysCookie !== '' ? JSON.parse(keysCookie) : KeyboardDefaultValues);
   }
 
