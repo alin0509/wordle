@@ -18,7 +18,7 @@ export class GameBoardService {
   private wordsCurrentValue$ = new BehaviorSubject<any>(words);
 
   constructor(private cookieService: CookieService) {
-
+    let gameWon: boolean = false;
     this.currentRowIndex = 0;
     this.wordToFind = this.cookieService.get('word');
     if (this.wordToFind === '') {
@@ -35,11 +35,20 @@ export class GameBoardService {
           this.currentRowIndex = index;
         }
       });
+      if (wordsCookieArr[this.currentRowIndex].every((w: KeyboardKey) => { return w.state === KeyState.Correct })) {
+        gameWon = true;
+      }
       this.currentRowIndex = this.currentRowIndex + 1;
       this.wordsCurrentValue$.next(wordsCookieArr);
     }
     const keysCookie = this.cookieService.get('keys');
     this.keyBoardCurrentValue$.next(keysCookie !== '' ? JSON.parse(keysCookie) : keys);
+    if (gameWon) {
+      setTimeout(() => {
+        alert('You win!');
+        this.currentRowIndex = 6;
+      }, 100);
+    }
   }
 
   updateCurrentWord(value: KeyboardKey[]) {
@@ -71,7 +80,7 @@ export class GameBoardService {
       .map((row: KeyboardKey[]) => {
         return row.map(k => {
           if (k.value === key.value) {
-            if (k.state !== KeyState.Correct) {
+            if (k.state !== KeyState.Correct && state != KeyState.Default) {
               k.state = state;
             }
           }
@@ -83,6 +92,9 @@ export class GameBoardService {
 
 
   updateWordsCurrent() {
+    if (this.currentRowIndex > 5) {
+      return;
+    }
     const words = this.wordsBoardCurrent();
     const currentWorld = this.currentWord();
     const word: KeyboardKey[] = words[this.currentRowIndex];
@@ -107,7 +119,7 @@ export class GameBoardService {
     const word: KeyboardKey[] = words[this.currentRowIndex];
     words[this.currentRowIndex] = word.map((k, index) => {
       const foundIndex: number = this.wordToFind.indexOf(k?.value ?? '');
-      if (foundIndex === index) {
+      if (k.value === this.wordToFind[index]) {
         k.state = KeyState.Correct;
       } else if (foundIndex !== -1) {
         k.state = KeyState.Present;
@@ -119,15 +131,19 @@ export class GameBoardService {
     words[this.currentRowIndex].forEach(k => this.updateKeyBoardState(k, k?.state ?? KeyState.Default));
 
     this.updateCookiesValues();
+
     if (!words[this.currentRowIndex].some(k => (k.state === KeyState.NotPresent || k.state === KeyState.Present))) {
-      setTimeout(() => alert('You win!'), 0);
+      setTimeout(() => {
+        alert('You win!');
+        this.currentRowIndex = 6;
+      }, 0);
       return;
     } else {
       this.currentRowIndex = this.currentRowIndex + 1;
       this.resetCurrentWord();
     }
     if (this.currentRowIndex > 5) {
-      setTimeout(() => alert('Game Over'), 0);
+      setTimeout(() => alert('Game Over! The word was ' + this.wordToFind), 0);
     }
   }
 
