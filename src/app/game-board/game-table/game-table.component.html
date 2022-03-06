@@ -1,0 +1,10 @@
+
+
+<div class="app-game-table-word"
+     *ngFor="let word of words$|async">
+  <ng-container *ngFor="let letter of word">
+    <div class="app-game-table-letter {{letter.state}}">
+      <span>{{letter.value}}</span>
+    </div>
+  </ng-container>
+</div>

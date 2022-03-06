@@ -1,10 +1,10 @@
 
-export interface KeyboardKey {
+export interface Letter {
     value?: string;
-    state?: KeyState
+    state?: LetterState
 }
 
-export enum KeyState {
+export enum LetterState {
     Default = 'default',
     NotPresent = 'not-present',
     Present = 'present',
