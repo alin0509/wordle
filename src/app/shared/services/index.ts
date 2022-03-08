@@ -1,2 +1,2 @@
 export * from './game-board.service';
-export * from  './game-cookie.service';
+export * from  './game-caching.service';

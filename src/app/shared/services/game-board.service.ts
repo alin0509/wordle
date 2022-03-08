@@ -1,15 +1,12 @@
 import { Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
 import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { GameDefaultValues, KeyboardDefaultValues } from '../data';
 import { GameHelper } from '../helpers';
 import { DayGameResult, Letter, LetterState } from '../interfaces';
-import { GameCookieService } from './game-cookie.service';
+import { GameCachingService } from './game-caching.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class GameBoardService {
   private wordToFind: string = '';
   private currentRowIndex: number = 0;
@@ -18,7 +15,7 @@ export class GameBoardService {
   private keyboardCurrentStateValue$ = new BehaviorSubject<any>(KeyboardDefaultValues);
   private wordsArrayCurrentValue$ = new BehaviorSubject<any>(GameDefaultValues);
 
-  constructor(private toastr: ToastrService, private gameCookieService: GameCookieService) {
+  constructor(private toastr: ToastrService, private gameCookieService: GameCachingService) {
     this.wordToFind = this.gameCookieService.getWordToFind();
     this.wordsArrayCurrentValue$.next(this.gameCookieService.getWordsValues());
     this.keyboardCurrentStateValue$.next(this.gameCookieService.getKeyboardValues());
@@ -182,16 +179,14 @@ export class GameBoardService {
 
   private gameOver() {
     this.toastr.info('Game Over! The word was ' + this.wordToFind.toUpperCase());
-    console.log(this.gameCookieService.getGameStatistics());
+    const result: DayGameResult = { wordFound: false, tries: this.currentRowIndex + 1 };
+    this.gameCookieService.updateResults(result);
   }
 
   private youWin() {
     this.toastr.success('You win!');
     const result: DayGameResult = { wordFound: true, tries: this.currentRowIndex + 1 };
     this.gameCookieService.updateResults(result);
-    console.log(this.gameCookieService.getGameStatistics());
     this.currentRowIndex = 6;
   }
-
-
 }

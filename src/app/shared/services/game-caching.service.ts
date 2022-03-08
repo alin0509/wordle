@@ -1,20 +1,17 @@
 import { Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
 import { GameDefaultValues, KeyboardDefaultValues, WORDS } from '../data';
 import { GameHelper } from '../helpers';
-import { DayGameResult, GameCache, GameStatistics, Letter } from '../interfaces';
+import { DayGameResult, GameCache, GameCacheValues, GameStatistics, Letter } from '../interfaces';
 
-@Injectable({
-    providedIn: 'root'
-})
-export class GameCookieService {
-    private cookieName: string = 'wordleCaching';
+@Injectable({ providedIn: 'root' })
+export class GameCachingService {
+    private storageName: string = 'wordleCaching';
     private gameCache: GameCache = {} as GameCache;
     private currentDay: string = new Date().toISOString().slice(0, 10);
 
-    constructor(private cookieService: CookieService) {
-        const cookieValue = this.cookieService.get(this.cookieName);
-        this.gameCache = cookieValue ? JSON.parse(cookieValue) : { [this.currentDay]: {} } as GameCache;
+    constructor() {
+        const storageValue = localStorage.getItem(this.storageName);
+        this.gameCache = storageValue ? JSON.parse(storageValue) : { [this.currentDay]: {} } as GameCache;
     }
 
     getWordToFind(): string {
@@ -34,7 +31,6 @@ export class GameCookieService {
     getGameStatistics(): GameStatistics {
         const statistics: GameStatistics = {};
         let gameResult = Object.keys(this.gameCache)?.map(k => this.gameCache[k]?.gameResult).filter(r => !!r);
-        debugger;
         statistics.totalGames = gameResult?.length;
         statistics.gameWon = gameResult?.filter(r => r?.wordFound)?.length;
         statistics.gameLost = gameResult?.filter(r => !r?.wordFound)?.length;
@@ -49,19 +45,26 @@ export class GameCookieService {
     }
 
     updateCurrentWordIndex(index: number) {
+        if (!this.gameCache[this.currentDay]) {
+            this.gameCache[this.currentDay] = {} as GameCacheValues;
+        };
         this.gameCache[this.currentDay].wordIndex = index;
-        this.cookieService.set(this.cookieName, JSON.stringify(this.gameCache), 100000);
+        this.updateStorage();
     }
     updateWords(words: Letter[][]) {
         this.gameCache[this.currentDay].words = words;
-        this.cookieService.set(this.cookieName, JSON.stringify(this.gameCache), 100000);
+        this.updateStorage();
     }
     updateKeyboard(keys: Letter[]) {
         this.gameCache[this.currentDay].keys = keys;
-        this.cookieService.set(this.cookieName, JSON.stringify(this.gameCache), 100000);
+        this.updateStorage();
     }
     updateResults(gameResult: DayGameResult) {
         this.gameCache[this.currentDay].gameResult = gameResult;
-        this.cookieService.set(this.cookieName, JSON.stringify(this.gameCache), 100000);
-    } 
+        this.updateStorage();
+    }
+
+    updateStorage() {
+        localStorage.setItem(this.storageName, JSON.stringify(this.gameCache));
+    }
 }
