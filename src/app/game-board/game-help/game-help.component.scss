@@ -1,0 +1,69 @@
+.app-gameHelp {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    &-content {
+        position: relative;
+        width: 500px;
+        margin: 0 auto;
+        margin-top: 30px;
+    }
+    &-closeButton {
+        position: absolute;
+        top: 20px;
+        right: 0px;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+    }
+    // TODO find a solution to remove this duplicate code
+    &-table {
+        &-word {
+            display: flex;
+            flex-direction: row;
+        }
+        &-letter {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            min-width: 40px;
+            min-height: 40px;
+            margin: 2px;
+            padding: 5px;
+            color: #ffffff;
+            border: solid 2px darkgrey;
+            font-family: 'Titan One', cursive;
+            text-transform: uppercase;
+            font-size: 25px;
+            span {
+                width: 100%;
+                text-align: center;
+            }
+            &.default {
+                color: #000000;
+            }
+            &.not-present {
+                background-color: #8b8878;
+                border: solid 2px #8b8878;
+            }
+            &.present {
+                background-color: #cdbe70;
+                border: solid 2px #cdbe70;
+            }
+            &.correct {
+                background-color: #a2cd5a;
+                border: solid 2px #a2cd5a;
+            }
+            &.filled {
+                color: #000000;
+                border-color: rgb(54, 54, 54);
+                border: solid 2px rgb(54, 54, 54);
+            }
+        }
+    }
+}

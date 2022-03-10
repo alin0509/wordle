@@ -181,12 +181,14 @@ export class GameBoardService {
     this.toastr.info('Game Over! The word was ' + this.wordToFind.toUpperCase());
     const result: DayGameResult = { wordFound: false, tries: this.currentRowIndex + 1 };
     this.gameCookieService.updateResults(result);
+    console.log(this.gameCookieService.getGameStatistics());
   }
 
   private youWin() {
     this.toastr.success('You win!');
     const result: DayGameResult = { wordFound: true, tries: this.currentRowIndex + 1 };
     this.gameCookieService.updateResults(result);
+    console.log(this.gameCookieService.getGameStatistics());
     this.currentRowIndex = 6;
   }
 }
