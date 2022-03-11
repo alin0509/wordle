@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Titan+One&display=swap');
+@import './vars.scss';
+
+@mixin word {
+    display: flex;
+    flex-direction: row;
+}
+
+@mixin letterBorderAndBackground($color, $width) {
+    background-color: $color;
+    border: solid $width $color;
+}
+
+@mixin letter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-width: 40px;
+    min-height: 40px;
+    margin: 2px;
+    padding: 5px;
+    color: #ffffff;
+    border: solid 2px $letterBorderColor;
+    font-family: 'Titan One', cursive;
+    text-transform: uppercase;
+    font-size: 25px;
+    span {
+        width: 100%;
+        text-align: center;
+    }
+    &.default {
+        color: $letterDefaultColor;
+    }
+    &.not-present {
+        @include letterBorderAndBackground($letterNotPresentColor,2px);
+    }
+    &.present {
+        @include letterBorderAndBackground($letterPresentColor,2px);
+    }
+    &.correct {
+        @include letterBorderAndBackground($letterCorrectColor,2px);
+    }
+    &.filled {
+        color: $letterDefaultColor;
+        border-color: $letterFilledColor;
+        border: solid 2px $letterFilledColor;
+    }
+}
+
+@mixin keyboardKey {
+    min-width: 35px;
+    margin: 3px;
+    padding: 5px;
+    color: #ffffff;
+    background-color: $keyBackgroundColor;
+    font-family: 'Titan One', cursive;
+    text-transform: uppercase;
+    font-size: 18px;
+    border: solid 1px $letterBorderColor;
+    border-radius: 4px;
+
+    &.default {
+        color: $letterDefaultColor;
+    }
+    &.not-present {
+        @include letterBorderAndBackground($letterNotPresentColor,1px);
+    }
+    &.present {
+        @include letterBorderAndBackground($letterPresentColor,1px);
+    }
+    &.correct {
+        @include letterBorderAndBackground($letterCorrectColor,1px);
+    }
+}
+
+@mixin closeButton {
+    position: absolute;
+    top: 20px;
+    right: 0px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+@mixin staticPageContent {
+    position: relative;
+    width: 500px;
+    margin: 0 auto;
+    margin-top: 30px;
+}
+
+@mixin staticPageRoot {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
