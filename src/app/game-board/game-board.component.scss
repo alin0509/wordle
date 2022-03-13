@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Titan+One&display=swap');
 .app-gameBoard {
     display: flex;
@@ -8,9 +7,13 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        color: white;
+        color: #000;
         background-color: #f1edc2;
         padding: 8px;
+        &-actions {
+            display: flex;
+            flex-direction: row;
+        }
 
         button {
             border: none;
@@ -30,7 +33,4 @@
         flex-grow: 1;
         margin: 16px;
     }
- 
 }
-
-

@@ -2,7 +2,10 @@
 body {
     margin: 0;
     height: 100%;
+
+    background-color: var(--bodyBackground);
+    color: var(--textColor);
 }
-html{
+html {
     height: 100%;
 }

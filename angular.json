@@ -25,14 +25,25 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
+            "inlineStyleLanguage": "scss", 
+            "extractCss": true,
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/ngx-toastr/toastr.css"
+              "node_modules/ngx-toastr/toastr.css",
+                {
+                "input": "./src/app/shared/styles/themes/default.scss",
+                "bundleName": "default",
+                "inject": false
+              },
+              {
+                "input": "./src/app/shared/styles/themes/dark.scss",
+                "bundleName": "dark",
+                "inject": false
+              }
             ],
             "scripts": []
           },

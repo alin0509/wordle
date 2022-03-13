@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Titan+One&display=swap');
-@import './vars.scss';
 
 @mixin word {
     display: flex;
@@ -20,7 +19,7 @@
     margin: 2px;
     padding: 5px;
     color: #ffffff;
-    border: solid 2px $letterBorderColor;
+    border: solid 2px var(--letterBorderColor);
     font-family: 'Titan One', cursive;
     text-transform: uppercase;
     font-size: 25px;
@@ -29,21 +28,21 @@
         text-align: center;
     }
     &.default {
-        color: $letterDefaultColor;
+        color: var(--letterDefaultColor);
     }
     &.not-present {
-        @include letterBorderAndBackground($letterNotPresentColor,2px);
+        @include letterBorderAndBackground(var(--letterNotPresentColor), 2px);
     }
     &.present {
-        @include letterBorderAndBackground($letterPresentColor,2px);
+        @include letterBorderAndBackground(var(--letterPresentColor), 2px);
     }
     &.correct {
-        @include letterBorderAndBackground($letterCorrectColor,2px);
+        @include letterBorderAndBackground(var(--letterCorrectColor), 2px);
     }
     &.filled {
-        color: $letterDefaultColor;
-        border-color: $letterFilledColor;
-        border: solid 2px $letterFilledColor;
+        color: var(--letterDefaultColor);
+        border-color: var(--letterFilledColor);
+        border: solid 2px var(--letterFilledColor);
     }
 }
 
@@ -51,25 +50,25 @@
     min-width: 35px;
     margin: 3px;
     padding: 5px;
-    color: #ffffff;
-    background-color: $keyBackgroundColor;
+    color: #fff;
+    background-color: var(--keyBackgroundColor);
     font-family: 'Titan One', cursive;
     text-transform: uppercase;
     font-size: 18px;
-    border: solid 1px $letterBorderColor;
+    border: solid 1px var(--letterBorderColor);
     border-radius: 4px;
 
     &.default {
-        color: $letterDefaultColor;
+        color: var(--keyDefaultColor);
     }
     &.not-present {
-        @include letterBorderAndBackground($letterNotPresentColor,1px);
+        @include letterBorderAndBackground(var(--letterNotPresentColor), 1px);
     }
     &.present {
-        @include letterBorderAndBackground($letterPresentColor,1px);
+        @include letterBorderAndBackground(var(--letterPresentColor), 1px);
     }
     &.correct {
-        @include letterBorderAndBackground($letterCorrectColor,1px);
+        @include letterBorderAndBackground(var(--letterCorrectColor), 1px);
     }
 }
 
@@ -80,6 +79,9 @@
     border: none;
     background-color: transparent;
     cursor: pointer;
+    img {
+        background-color: var(--closeButtonBackgroundColor);
+    }
 }
 @mixin staticPageContent {
     position: relative;
@@ -89,12 +91,13 @@
 }
 
 @mixin staticPageRoot {
-    display: flex;
-    flex-direction: column;
-    background-color: white;
-    width: 100%;
-    height: 100%;
     position: fixed;
     top: 0;
     left: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bodyBackground);
+    color: var(--textColor);
 }
