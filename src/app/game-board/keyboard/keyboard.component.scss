@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Titan+One&display=swap');
+@import '../../shared/styles/mixin.scss';
 .app-keyboard {
     display: flex;
     flex-direction: column;
@@ -8,31 +8,6 @@
         flex-direction: row;
     }
     &-key {
-        min-width: 35px;
-        margin: 3px;
-        padding: 5px;
-        color: #ffffff;
-        background-color: lightgray;
-        font-family: 'Titan One', cursive;
-        text-transform: uppercase;
-        font-size: 18px;
-        border: solid 1px darkgrey;
-        border-radius: 4px;
-
-        &.default {
-            color: #000000;
-        }
-        &.not-present {
-            background-color: #8b8878;
-            border: solid 1px #8b8878;
-        }
-        &.present {
-            background-color: #CDBE70;
-            border: solid 1px #CDBE70;
-        }
-        &.correct {
-            background-color: #a2cd5a;
-            border: solid 1px #a2cd5a;
-        }
+        @include keyboardKey();
     }
 }

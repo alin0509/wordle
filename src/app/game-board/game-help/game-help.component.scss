@@ -1,0 +1,19 @@
+@import '../../shared/styles/mixin.scss';
+
+.app-gameHelp {
+    @include staticPageRoot();
+    &-content {
+        @include staticPageContent();
+    }
+    &-closeButton {
+        @include closeButton();
+    }
+    &-table {
+        &-word {
+            @include word();
+        }
+        &-letter {
+            @include letter();
+        }
+    }
+}

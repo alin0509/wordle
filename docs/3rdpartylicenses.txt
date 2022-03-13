@@ -13,9 +13,6 @@ MIT
 @angular/router
 MIT
 
-ngx-cookie-service
-MIT
-
 ngx-toastr
 MIT
 The MIT License (MIT)

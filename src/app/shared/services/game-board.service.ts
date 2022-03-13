@@ -1,29 +1,27 @@
 import { Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
 import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { GameDefaultValues, KeyboardDefaultValues } from '../data';
 import { GameHelper } from '../helpers';
-import { Letter, LetterState } from '../interfaces';
+import { DayGameResult, Letter, LetterState } from '../interfaces';
+import { GameCachingService } from './game-caching.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class GameBoardService {
   private wordToFind: string = '';
   private currentRowIndex: number = 0;
-  private currentDay: string = new Date().toISOString().slice(0, 10);
 
   private currentWordValue$ = new BehaviorSubject<Letter[]>([]);
   private keyboardCurrentStateValue$ = new BehaviorSubject<any>(KeyboardDefaultValues);
   private wordsArrayCurrentValue$ = new BehaviorSubject<any>(GameDefaultValues);
 
-  constructor(private cookieService: CookieService, private toastr: ToastrService) {
-    this.generateWordToFind();
-    this.initWordArrayValues();
-    this.initKeyboardValues();
+  constructor(private toastr: ToastrService, private gameCookieService: GameCachingService) {
+    this.wordToFind = this.gameCookieService.getWordToFind();
+    this.wordsArrayCurrentValue$.next(this.gameCookieService.getWordsValues());
+    this.keyboardCurrentStateValue$.next(this.gameCookieService.getKeyboardValues());
     this.getCurrentRowIndex();
     this.testIfWordAlreadyFound();
+    console.log(this.gameCookieService.getGameStatistics());
   }
 
   updateCurrentWord(value: Letter[]) {
@@ -127,34 +125,8 @@ export class GameBoardService {
   }
 
   private updateCookiesValues() {
-    this.cookieService.set('words_'+this.currentDay, JSON.stringify(this.wordsArrayCurrentValues()));
-    this.cookieService.set('keys_'+this.currentDay, JSON.stringify(this.keyboardCurrentState()));
-  }
-
-  private generateWordToFind() {
-    this.wordToFind = this.cookieService.get('word_'+this.currentDay);
-    if (this.wordToFind === '') {
-      this.generateNewWord();
-    };
-  }
-
-  private generateNewWord() {
-    this.wordToFind = GameHelper.generateRandomWord();
-    this.cookieService.set('word_'+this.currentDay, this.wordToFind);
-  }
-
-  private initWordArrayValues() {
-    const wordsCookie: string = this.cookieService.get('words_'+this.currentDay);
-    if (wordsCookie === '') {
-      this.wordsArrayCurrentValue$.next(GameDefaultValues);
-    } else {
-      this.wordsArrayCurrentValue$.next(JSON.parse(wordsCookie));
-    }
-  }
-
-  private initKeyboardValues() {
-    const keysCookie = this.cookieService.get('keys_'+this.currentDay);
-    this.keyboardCurrentStateValue$.next(keysCookie !== '' ? JSON.parse(keysCookie) : KeyboardDefaultValues);
+    this.gameCookieService.updateWords(this.wordsArrayCurrentValues());
+    this.gameCookieService.updateKeyboard(this.keyboardCurrentState());
   }
 
   private getCurrentRowIndex(): void {
@@ -173,8 +145,10 @@ export class GameBoardService {
     if (this.currentRowIndex !== 0) {
       if (wordsArray[this.currentRowIndex - 1].every((w: Letter) => { return w.state === LetterState.Correct })) {
         this.toastr.success('Already solved!');
+        console.log(this.gameCookieService.getGameStatistics());
       } else if (this.currentRowIndex === 6) {
         this.toastr.info('Already played this game!');
+        console.log(this.gameCookieService.getGameStatistics());
       }
     }
   }
@@ -205,12 +179,16 @@ export class GameBoardService {
 
   private gameOver() {
     this.toastr.info('Game Over! The word was ' + this.wordToFind.toUpperCase());
+    const result: DayGameResult = { wordFound: false, tries: this.currentRowIndex + 1 };
+    this.gameCookieService.updateResults(result);
+    console.log(this.gameCookieService.getGameStatistics());
   }
 
   private youWin() {
     this.toastr.success('You win!');
+    const result: DayGameResult = { wordFound: true, tries: this.currentRowIndex + 1 };
+    this.gameCookieService.updateResults(result);
+    console.log(this.gameCookieService.getGameStatistics());
     this.currentRowIndex = 6;
   }
-
-
 }

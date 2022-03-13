@@ -1,8 +1,8 @@
-import { GameDefaultValues, WORDS } from '../data';
+import { WORDS } from '../data';
 
 export class GameHelper {
-    static generateRandomWord(): string {
-        return WORDS[Math.floor(Math.random() * (GameDefaultValues.length - 1))];
+    static generateRandomWordIndex(): number {
+        return Math.floor(Math.random() * (WORDS.length - 1));
     }
 
     static verifyWord(word: string): boolean {

@@ -1,2 +1,21 @@
-<app-game-table></app-game-table>
-<app-keyboard></app-keyboard>
+<div class="app-gameBoard-header">
+  <div class="app-gameBoard-title"> Wordle </div>
+  <div  class="app-gameBoard-header-actions">
+    <app-theme-toggle></app-theme-toggle>
+    <button (click)="showStatistics=true"><img src="./assets/leaderboard_black.svg"></button>
+    <button (click)="showHelp=true"><img src="./assets/help_black.svg"></button>
+  </div>
+</div>
+
+<div class="app-gameBoard-content">
+  <app-game-table></app-game-table>
+  <app-keyboard></app-keyboard>
+</div>
+
+<ng-container *ngIf="showStatistics">
+  <app-game-statistics (closeStatisticsEvent)="showStatistics=false"></app-game-statistics>
+</ng-container>
+
+<ng-container *ngIf="showHelp">
+  <app-game-help (closeHelpEvent)="showHelp=false"></app-game-help>
+</ng-container>

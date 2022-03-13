@@ -1,0 +1,11 @@
+@import '../../shared/styles/mixin.scss';
+
+.app-gameStatistics {
+    @include staticPageRoot();
+    &-content {
+        @include staticPageContent();
+    }
+    &-closeButton {
+        @include closeButton();
+    }
+}

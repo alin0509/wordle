@@ -1,0 +1,16 @@
+<div class="app-gameStatistics-content">
+  <h2> Statistics </h2>
+  <p> Games played: {{statistics.totalGames}} </p>
+  <p> Games won: {{statistics.gameWon}} </p>
+  <p> Games lost: {{statistics.gameLost}} </p>
+  <ng-container *ngFor="let try of triesArray">
+    <p> {{ try }} :
+      <span *ngIf="statistics.counts && statistics.counts[try] ; else showZero">{{statistics.counts[try] }}</span>
+      <ng-template #showZero>
+        <span>0</span>
+      </ng-template>
+    </p>
+  </ng-container>
+  <button (click)="closeStatistics()"
+          class="app-gameStatistics-closeButton"><img src="./assets/clear_black.svg"></button>
+</div>
