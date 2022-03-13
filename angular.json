@@ -26,7 +26,6 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss", 
-            "extractCss": true,
             "assets": [
               "src/favicon.ico",
               "src/assets"
