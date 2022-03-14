@@ -7,7 +7,7 @@ import { DayGameResult, GameCache, GameCacheValues, GameStatistics, Letter } fro
 export class GameCachingService {
     private storageName: string = 'wordleCaching';
     private gameCache: GameCache = {} as GameCache;
-    private currentDay: string = new Date('01.01.2022').toISOString().slice(0, 10);
+    private currentDay: string = new Date().toISOString().slice(0, 10);
 
     constructor() {
         const storageValue = localStorage.getItem(this.storageName);
