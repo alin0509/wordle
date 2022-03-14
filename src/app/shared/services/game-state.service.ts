@@ -1,34 +1,34 @@
 import { Injectable } from '@angular/core';
 import { GameDefaultValues, KeyboardDefaultValues, WORDS } from '../data';
 import { GameHelper } from '../helpers';
-import { DayGameResult, GameCache, GameCacheValues, GameStatistics, Letter } from '../interfaces';
+import { DailyResult, GameProgress, GameDailyProgress, GameStatistics, Letter } from '../interfaces';
 
 @Injectable({ providedIn: 'root' })
-export class GameCachingService {
+export class GameStateService {
     private storageName: string = 'wordleCaching';
-    private gameCache: GameCache = {} as GameCache;
-    private currentDay: string = new Date().toISOString().slice(0, 10);
+    private gameCache: GameProgress = {} as GameProgress;
+    private currentDay: string = new Date('02.02.2022').toISOString().slice(0, 10);
 
     constructor() {
         const storageValue = localStorage.getItem(this.storageName);
-        this.gameCache = storageValue ? JSON.parse(storageValue) : { [this.currentDay]: {} } as GameCache;
+        this.gameCache = storageValue ? JSON.parse(storageValue) : { [this.currentDay]: {} } as GameProgress;
     }
 
-    getWordToFind(): string {
+    wordToFind(): string {
         const currentWordIndex = this.gameCache[this.currentDay]?.wordIndex ?? GameHelper.generateRandomWordIndex();
-        this.updateCurrentWordIndex(currentWordIndex);
+        this.updateCurrentWordIndexState(currentWordIndex);
         return WORDS[currentWordIndex];
     }
 
-    getKeyboardValues(): Letter[] {
+    keyboardValues(): Letter[] {
         return this.gameCache[this.currentDay]?.keys ?? KeyboardDefaultValues;
     }
 
-    getWordsValues(): Letter[][] {
+    wordsValues(): Letter[][] {
         return this.gameCache[this.currentDay]?.words ?? GameDefaultValues;
     }
 
-    getGameStatistics(): GameStatistics {
+    gameStatistics(): GameStatistics {
         const statistics: GameStatistics = {};
         let gameResult = Object.keys(this.gameCache)?.map(k => this.gameCache[k]?.gameResult).filter(r => !!r);
         statistics.totalGames = gameResult?.length;
@@ -44,27 +44,25 @@ export class GameCachingService {
         return statistics;
     }
 
-    updateCurrentWordIndex(index: number) {
+    updateCurrentWordIndexState(index: number): void {
         if (!this.gameCache[this.currentDay]) {
-            this.gameCache[this.currentDay] = {} as GameCacheValues;
+            this.gameCache[this.currentDay] = {} as GameDailyProgress;
         };
         this.gameCache[this.currentDay].wordIndex = index;
         this.updateStorage();
     }
-    updateWords(words: Letter[][]) {
+    updateWordsAndKeyboardState(words: Letter[][],keys: Letter[]): void {
         this.gameCache[this.currentDay].words = words;
-        this.updateStorage();
-    }
-    updateKeyboard(keys: Letter[]) {
         this.gameCache[this.currentDay].keys = keys;
         this.updateStorage();
     }
-    updateResults(gameResult: DayGameResult) {
+ 
+    updateResultsState(gameResult: DailyResult): void {
         this.gameCache[this.currentDay].gameResult = gameResult;
         this.updateStorage();
     }
 
-    updateStorage() {
+    updateStorage(): void {
         localStorage.setItem(this.storageName, JSON.stringify(this.gameCache));
     }
 }

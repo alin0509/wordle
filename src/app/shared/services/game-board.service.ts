@@ -3,8 +3,8 @@ import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { GameDefaultValues, KeyboardDefaultValues } from '../data';
 import { GameHelper } from '../helpers';
-import { DayGameResult, Letter, LetterState } from '../interfaces';
-import { GameCachingService } from './game-caching.service';
+import { DailyResult, Letter, LetterState } from '../interfaces';
+import { GameStateService } from './game-state.service';
 
 @Injectable({ providedIn: 'root' })
 export class GameBoardService {
@@ -15,13 +15,12 @@ export class GameBoardService {
   private keyboardCurrentStateValue$ = new BehaviorSubject<any>(KeyboardDefaultValues);
   private wordsArrayCurrentValue$ = new BehaviorSubject<any>(GameDefaultValues);
 
-  constructor(private toastr: ToastrService, private gameCookieService: GameCachingService) {
-    this.wordToFind = this.gameCookieService.getWordToFind();
-    this.wordsArrayCurrentValue$.next(this.gameCookieService.getWordsValues());
-    this.keyboardCurrentStateValue$.next(this.gameCookieService.getKeyboardValues());
+  constructor(private toastr: ToastrService, private gameStateService: GameStateService) {
+    this.wordToFind = this.gameStateService.wordToFind();
+    this.wordsArrayCurrentValue$.next(this.gameStateService.wordsValues());
+    this.keyboardCurrentStateValue$.next(this.gameStateService.keyboardValues());
     this.getCurrentRowIndex();
     this.testIfWordAlreadyFound();
-    console.log(this.gameCookieService.getGameStatistics());
   }
 
   updateCurrentWord(value: Letter[]) {
@@ -31,7 +30,7 @@ export class GameBoardService {
   currentWord(): Letter[] {
     return this.currentWordValue$.value;
   }
-  resetCurrentWord() {
+  resetCurrentWord(): void {
     this.currentWordValue$.next([]);
   }
 
@@ -44,7 +43,7 @@ export class GameBoardService {
   keyboardCurrentState(): any[] {
     return this.keyboardCurrentStateValue$.value;
   }
-  updateKeyboardLetterState(key: Letter, state: LetterState) {
+  updateKeyboardLetterState(key: Letter, state: LetterState): void {
     const keyboard = this.keyboardCurrentState()
       .map((row: Letter[]) => {
         return row.map(k => {
@@ -59,7 +58,7 @@ export class GameBoardService {
     this.updateKeyboardCurrentState(keyboard)
   }
 
-  updateWordsArrayCurrentValues() {
+  updateWordsArrayCurrentValues(): void {
     if (this.currentRowIndex > 5) {
       return;
     }
@@ -80,10 +79,10 @@ export class GameBoardService {
   wordsArrayCurrentValues(): Letter[][] {
     return this.wordsArrayCurrentValue$.value;
   }
-  testCurrentWord() {
+  testTheWord(): void {
     this.updateWordsArrayLetterStatus();
     this.updateKeyboardStatus();
-    this.updateCookiesValues();
+    this.updateStateValues();
     if (this.testIfWordWasFound()) {
       this.youWin();
       return;
@@ -95,7 +94,7 @@ export class GameBoardService {
       this.gameOver();
     }
   }
-  backKeyPressed() {
+  backKeyPressed(): void {
     let currentWord: Letter[] = this.currentWord();
     if (currentWord.length) {
       const el = currentWord.pop();
@@ -103,19 +102,19 @@ export class GameBoardService {
       this.updateKeyboardLetterState(el ?? {} as Letter, LetterState.Default);
     }
   }
-  enterKeyPressed() {
+  enterKeyPressed(): void {
     let currentWord: Letter[] = this.currentWord();
     if (currentWord.length === 5) {
       let currentWord: Letter[] = this.currentWord();
       if (GameHelper.verifyWord(currentWord.map(k => k.value).join(''))) {
-        this.testCurrentWord();
+        this.testTheWord();
         currentWord = [];
       } else {
         this.toastr.error("Not a valid word.")
       }
     }
   }
-  addLetterToWord(key: Letter) {
+  addLetterToWord(key: Letter): void {
     let currentWord: Letter[] = this.currentWord();
     if (currentWord.length === 5) {
       return;
@@ -124,9 +123,8 @@ export class GameBoardService {
     this.updateCurrentWord(currentWord);
   }
 
-  private updateCookiesValues() {
-    this.gameCookieService.updateWords(this.wordsArrayCurrentValues());
-    this.gameCookieService.updateKeyboard(this.keyboardCurrentState());
+  private updateStateValues(): void {
+    this.gameStateService.updateWordsAndKeyboardState(this.wordsArrayCurrentValues(), this.keyboardCurrentState());
   }
 
   private getCurrentRowIndex(): void {
@@ -145,10 +143,8 @@ export class GameBoardService {
     if (this.currentRowIndex !== 0) {
       if (wordsArray[this.currentRowIndex - 1].every((w: Letter) => { return w.state === LetterState.Correct })) {
         this.toastr.success('Already solved!');
-        console.log(this.gameCookieService.getGameStatistics());
       } else if (this.currentRowIndex === 6) {
         this.toastr.info('Already played this game!');
-        console.log(this.gameCookieService.getGameStatistics());
       }
     }
   }
@@ -177,18 +173,16 @@ export class GameBoardService {
     return this.currentWord().map(l => l.value).join('') === this.wordToFind
   }
 
-  private gameOver() {
+  private gameOver(): void {
     this.toastr.info('Game Over! The word was ' + this.wordToFind.toUpperCase());
-    const result: DayGameResult = { wordFound: false, tries: this.currentRowIndex + 1 };
-    this.gameCookieService.updateResults(result);
-    console.log(this.gameCookieService.getGameStatistics());
+    const result: DailyResult = { wordFound: false, tries: this.currentRowIndex + 1 };
+    this.gameStateService.updateResultsState(result);
   }
 
-  private youWin() {
+  private youWin(): void {
     this.toastr.success('You win!');
-    const result: DayGameResult = { wordFound: true, tries: this.currentRowIndex + 1 };
-    this.gameCookieService.updateResults(result);
-    console.log(this.gameCookieService.getGameStatistics());
+    const result: DailyResult = { wordFound: true, tries: this.currentRowIndex + 1 };
+    this.gameStateService.updateResultsState(result);
     this.currentRowIndex = 6;
   }
 }

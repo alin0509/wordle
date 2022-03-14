@@ -19,15 +19,15 @@ export class ThemeService {
     this.loadStyle(`${theme}.css`);
   }
 
-  loadStyle(styleName: string) {
+  loadStyle(styleName: string): void {
     const head = this._document?.getElementsByTagName('head')[0];
-    let themeLink = this._document?.getElementById('client-theme') as HTMLLinkElement;
+    let themeLink = this._document?.getElementById('theme') as HTMLLinkElement;
 
     if (themeLink) {
       themeLink.href = styleName;
     } else {
       let style: any = this._document?.createElement('link');
-      style.id = 'client-theme';
+      style.id = 'theme';
       style.rel = 'stylesheet';
       style.href = `${styleName}`;
       head?.appendChild(style);
