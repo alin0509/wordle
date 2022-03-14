@@ -1,5 +1,5 @@
 import { Component, EventEmitter, HostBinding, Output, ViewEncapsulation } from '@angular/core';
-import { GameCachingService } from '../../shared';
+import { GameStateService } from '../../shared';
 
 @Component({
   selector: 'app-game-statistics',
@@ -12,14 +12,12 @@ export class GameStatisticsComponent {
 
   @Output() closeStatisticsEvent = new EventEmitter<boolean>();
 
-  statistics = this.gameCachingService.getGameStatistics();
+  statistics = this.gameCachingService.gameStatistics();
   triesArray = [1, 2, 3, 4, 5, 6];
 
-  constructor(private gameCachingService: GameCachingService) {
+  constructor(private gameCachingService: GameStateService) { }
 
-  }
-
-  closeStatistics() {
+  closeStatistics(): void {
     this.closeStatisticsEvent.emit(true);
   }
 } 

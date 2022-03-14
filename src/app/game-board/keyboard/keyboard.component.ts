@@ -15,7 +15,7 @@ export class KeyboardComponent {
 
   constructor(private gameBoardService: GameBoardService) { }
 
-  clickedKey(key: Letter) { 
+  clickedKey(key: Letter): void {
 
     if (key.value === 'back') {
       this.gameBoardService.backKeyPressed();
